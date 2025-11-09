@@ -12,20 +12,8 @@
 <body>
     <div id="dynamic-greeting" class="greeting"></div>
     <!-- Este contenedor se usará para mostrar el mensaje dinámico de saludo -->
-    <!-- Barra de navegación para cambiar entre vistas -->
-    <nav class="top-nav" role="navigation" aria-label="Navegación principal">
-        <div class="nav-left">
-            <a class="nav-brand" href="#">Asere Panel</a>
-        </div>
-        <div class="nav-right">
-            <button class="nav-btn" id="nav-dashboard">Panel</button>
-            <button class="nav-btn" id="nav-stats">Estadísticas</button>
-        </div>
-    </nav>
 
-    <main role="main">
-        <div id="main-dashboard">
-            <div class="container">
+    <div class="container">
         <h1><i class="fas fa-server"></i>Servidor Asere</h1>
         <div class="status-section">
             <div class="status-card">
@@ -50,68 +38,18 @@
             </div>
         </div>
         <div class="btn-group">
-            <button class="btn" id="view-stats-button"><i class="fas fa-chart-bar"></i> Ver Estadísticas</button>
+            <a class="btn" href="/obtener-estadisticas"><i class="fas fa-chart-bar"></i> Ver Estadísticas Completas</a>
             <button class="btn" onclick="clearConsole()"><i class="fas fa-broom"></i> Limpiar Consola</button>
             <button class="btn" onclick="copyLogsToClipboard()"><i class="fas fa-copy"></i> Copiar Logs</button>
+            <button class="btn btn-danger" onclick="clearStatistics()"><i class="fas fa-trash"></i> Limpiar Estadísticas</button>
         </div>
-        <div class="actions-right">
-            <button id="update-comparison-button" class="btn"><i class="fas fa-sync-alt"></i> Actualizar</button>
-            <div class="settings-dropdown" id="settings-dropdown">
-                <button id="settings-toggle" class="btn nav-btn"><i class="fas fa-cog"></i></button>
-                <div class="settings-menu" id="settings-menu" aria-hidden="true">
-                    <button class="settings-item" id="action-clear-statistics"><i class="fas fa-trash-alt"></i> Limpiar estadísticas</button>
-                    <button class="settings-item" id="action-export-csv"><i class="fas fa-file-csv"></i> Exportar CSV (filtradas)</button>
-                </div>
-            </div>
-        </div>
+        <button id="update-comparison-button" class="btn"><i class="fas fa-sync-alt"></i> Actualizar</button>
     </div>
 
-            <div class="console-container">
-                <div class="console-header"><i class="fas fa-terminal"></i> Server Logs</div>
-                <div id="log-output"></div>
-            </div>
-
-            <div id="new-orders-panel" style="display:none">
-                <div class="panel-header">
-                    <h2>Pedidos Nuevos</h2>
-                    <button id="close-orders-panel">&times;</button>
-                </div>
-                <div id="orders-list">
-                    <!-- Los pedidos nuevos se mostrarán aquí -->
-                </div>
-            </div>
-
-            <button id="new-orders-button">
-                <span id="new-orders-count">0</span>
-            </button>
-
-            <div id="notification-panel">
-                <!-- Las notificaciones se agregarán dinámicamente aquí -->
-            </div>
-        </div> <!-- /container -->
-    </div> <!-- /main-dashboard -->
-
-        <!-- Página de estadísticas separada (oculta por defecto) -->
-        <section id="stats-page" class="stats-page" style="display:none" role="region" aria-label="Página de estadísticas">
-            <div class="stats-header">
-                <h2>Estadísticas Detalladas</h2>
-                <div class="stats-controls">
-                    <input id="stats-search" type="search" placeholder="Buscar por IP, país o afiliado...">
-                    <select id="stats-country-filter">
-                        <option value="">Todos los países</option>
-                    </select>
-                    <select id="stats-sort">
-                        <option value="date_desc">Fecha: Más recientes</option>
-                        <option value="date_asc">Fecha: Más antiguas</option>
-                    </select>
-                    <button id="stats-back" class="btn" aria-label="Volver al panel">Volver</button>
-                </div>
-            </div>
-            <div id="stats-loader" class="stats-loader" aria-hidden="true" style="display:none"></div>
-            <div id="stats-list" class="stats-list" aria-live="polite"></div>
-            <div id="stats-pagination" class="stats-pagination"></div>
-        </section>
-    </main>
+    <div class="console-container">
+        <div class="console-header"><i class="fas fa-terminal"></i> Server Logs</div>
+        <div id="log-output"></div>
+    </div>
 
     <div id="new-orders-panel" style="display:none">
         <div class="panel-header">
@@ -129,19 +67,6 @@
 
     <div id="notification-panel">
         <!-- Las notificaciones se agregarán dinámicamente aquí -->
-    </div>
-
-    <!-- Modal de confirmación para acciones peligrosas -->
-    <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" style="display:none">
-        <div class="modal" role="document" aria-labelledby="modal-title">
-            <h3 id="modal-title">Confirmar acción</h3>
-            <p id="modal-message">¿Estás seguro? Esta acción no se puede deshacer.</p>
-            <div class="modal-controls">
-                <input id="modal-confirm-input" placeholder="Escribe BORRAR para confirmar" aria-label="Confirmar acción">
-                <button id="modal-confirm-btn" class="btn btn-danger" disabled>Confirmar</button>
-                <button id="modal-cancel-btn" class="btn">Cancelar</button>
-            </div>
-        </div>
     </div>
 
     <script src="/scripts.js"></script>
