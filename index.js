@@ -32,6 +32,7 @@ function addLog(message) {
 const allowedOrigins = [
     "https://www.asereshops.com",
     "https://hcorebeat.github.io",
+    "https://analytics-asere.onrender.com",
     "https://servidor-estadisticas.onrender.com",
     "http://127.0.0.1:5500",
     "http://localhost:10000",
