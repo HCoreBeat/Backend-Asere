@@ -2,7 +2,13 @@ const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
 const lockfile = require("proper-lockfile");
-const moment = require("moment-timezone");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
+// Establecer zona horaria por defecto (utilizar cuando no se llame explícitamente .tz())
+dayjs.tz.setDefault("America/Havana");
 const fetch = require("node-fetch");
 exports.fetch = fetch;
 
@@ -16,11 +22,11 @@ app.use(express.static('public'));
 const serverLogs = [];
 
 // Variable para almacenar la fecha de inicio del servidor
-const serverStartTime = moment().tz("America/Havana");
+const serverStartTime = dayjs().tz("America/Havana");
 
 // Función para añadir logs y mantener un tamaño limitado
 function addLog(message) {
-    const timestamp = moment().tz("America/Havana").format("YYYY-MM-DD HH:mm:ss");
+    const timestamp = dayjs().tz("America/Havana").format("YYYY-MM-DD HH:mm:ss");
     serverLogs.push(`[${timestamp}] ${message}`);
     // Mantener solo los últimos 100 logs para evitar sobrecargar la memoria
     if (serverLogs.length > 100) {
@@ -32,7 +38,6 @@ function addLog(message) {
 const allowedOrigins = [
     "https://www.asereshops.com",
     "https://hcorebeat.github.io",
-    "https://analytics-asere.onrender.com",
     "https://servidor-estadisticas.onrender.com",
     "http://127.0.0.1:5500",
     "http://localhost:10000",
@@ -58,6 +63,8 @@ app.use(express.json());
 const path = require('path');
 const directoryPath = path.join(__dirname, "data");
 const filePath = path.join(directoryPath, "estadistica.json");
+
+const GOOGLE_APPS_SCRIPT_RATES_URL = "https://script.google.com/macros/s/AKfycbywGWQxeNQPrt4NhHm9E-ykUh5UnYKD5Av_SJaCPJo200h3dk1MH8mrnFAZcGxB3-u93w/exec";
 
 // Función para asegurar que el archivo de estadísticas existe
 async function ensureStatisticsFile() {
@@ -144,7 +151,7 @@ app.post("/guardar-estadistica", async (req, res) => {
             const estadisticas = data ? sanitizeJSON(data) : [];
             const usuarioExistente = estadisticas.find(est => est.ip === nuevaEstadistica.ip);
 
-            const fechaHoraCuba = moment().tz("America/Havana").format("YYYY-MM-DD HH:mm:ss");
+            const fechaHoraCuba = dayjs().tz("America/Havana").format("YYYY-MM-DD HH:mm:ss");
 
             estadisticas.push({
                 ip: nuevaEstadistica.ip,
@@ -213,8 +220,6 @@ app.get("/obtener-estadisticas", async (req, res) => {
 });
 
 // ** IMPORTANTE: REEMPLAZA ESTA URL CON LA URL DE TU APLICACIÓN WEB DE APPS SCRIPT **
-// Esta es la URL que obtuviste al publicar tu script de Google Apps Script como Web App.
-const GOOGLE_APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxXxXxXxXxXxXxXxXxXxXxXxXxXxXx/exec";
 
 // Ruta POST para recibir los datos del pedido desde el frontend
 app.post('/send-pedido', async (req, res) => {
@@ -519,3 +524,43 @@ setInterval(async () => {
         addLog(`ERROR: Error en la verificación periódica de nuevos pedidos: ${error.message}`);
     }
 }, 30000); // 30 segundos
+
+
+app.get("/api/rates", async (req, res) => {
+    try {
+        const response = await fetch(GOOGLE_APPS_SCRIPT_RATES_URL);
+        const data = await response.json();
+
+        if (!response.ok || data.status === "error") {
+            return res.status(500).json({ status: "error", message: data.message || "Error desde Apps Script" });
+        }
+
+        res.json({ status: "success", data: data.data });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+
+app.post("/api/rates/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const body = { ...req.body, id };
+
+        const response = await fetch(GOOGLE_APPS_SCRIPT_RATES_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status === "error") {
+            return res.status(500).json({ status: "error", message: data.message || "Error guardando tasa" });
+        }
+
+        res.json({ status: "success", data: data.data });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
