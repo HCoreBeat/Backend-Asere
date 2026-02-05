@@ -41,7 +41,8 @@ const allowedOrigins = [
     "https://servidor-estadisticas.onrender.com",
     "http://127.0.0.1:5500",
     "http://localhost:10000",
-    "http://localhost:5500"
+    "http://localhost:5500",
+    "https://analytics-asere.onrender.com"
 ];
 
 app.use(cors({
